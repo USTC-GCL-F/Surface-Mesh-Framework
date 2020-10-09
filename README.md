@@ -11,6 +11,7 @@ The program is used to load meshes and render using OpenGL.
 ## Usage
 
 ```
+git clone https://github.com/USTC-GCL/SurfaceFramework
 cd SurfaceFramework
 ```
 
