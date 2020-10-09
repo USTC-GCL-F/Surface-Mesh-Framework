@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="SurfaceMeshProcessing">
+      <file>Images/flat.png</file>
+      <file>Images/flatlines.png</file>
+      <file>Images/points.png</file>
+      <file>Images/smooth.png</file>
+      <file>Images/wire.png</file>
+      <file>Images/hiddenlines.png</file>
+      <file>Images/Update.png</file>
+      <file>Images/remesher.png</file>
+      <file>Images/ClearMesh.png</file>
+      <file>Images/saveScreen.png</file>
+      <file>Images/Open.png</file>
+      <file>Images/Save.png</file>
+      <file>Images/clear_select.png</file>
+      <file>Images/move_vertex.png</file>
+      <file>Images/selectEdges.png</file>
+      <file>Images/selectFaces.png</file>
+      <file>Images/selectVertices.png</file>
+      <file>Images/doubleviewmode.png</file>
+      <file>Images/singleviewmode.png</file>
+      <file>Images/multiviewmode.png</file>
+      <file>Images/boundary.png</file>
+      <file>Images/curvature.png</file>
+      <file>Images/selections.png</file>
+      <file>Images/bbox.png</file>
+      <file>Images/topology-edgeCollapse.png</file>
+      <file>Images/topology-edgeSplit.png</file>
+      <file>Images/topology-edgeFlip.png</file>
+      <file>Images/edit-redo.png</file>
+      <file>Images/edit-undo.png</file>
+    </qresource>
+</RCC>

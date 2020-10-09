@@ -1,0 +1,55 @@
+cmake_minimum_required(VERSION 3.7)
+project(SurfaceFramework)
+
+add_definitions(/D_USE_MATH_DEFINES)
+
+#path
+SET(EIGEN_PATH "D:/LIBRARY/Eigen")
+SET(OPENMESH_PATH "D:/LIBRARY/OpenMesh/src")
+SET(OPENMESH_LIB_PATH "D:/LIBRARY/OpenMesh/build_vs/Build/lib")
+
+#QT
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+find_package(Qt5Widgets)  
+find_package(Qt5Core)
+find_package(Qt5Gui)
+find_package(Qt5OpenGL)
+get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)# https://zhuanlan.zhihu.com/p/73469206, auto-depoly
+get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+find_program(DEPLOYQT_EXECUTABLE NAMES windeployqt macdeployqt HINTS "${_qt_bin_dir}")
+
+set(QRC_SOURCE_FILES src/surfacemeshprocessing.qrc)
+qt5_add_resources(QRC_FILES ${QRC_SOURCE_FILES})
+
+include_directories(${EIGEN_PATH})
+include_directories(${OPENMESH_PATH})
+link_directories(${OPENMESH_LIB_PATH})
+
+file (GLOB SRCFILES
+    src/*.cpp
+    src/MeshViewer/*.cpp
+    src/MeshViewer/Aux_Transform_Mesh_Dialog.h
+    src/Common/*.cpp
+    src/ANN/*.cpp
+)
+
+add_executable(${PROJECT_NAME} ${SRCFILES} ${QRC_FILES})
+if(WIN32)
+add_custom_command(TARGET ${PROJECT_NAME}
+POST_BUILD
+COMMAND ${DEPLOYQT_EXECUTABLE} "$<TARGET_FILE:${PROJECT_NAME}>"
+    --$<LOWER_CASE:$<CONFIG>> --qmldir ${CMAKE_SOURCE_DIR}
+)
+endif()
+
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL
+    optimized OpenMeshCore 
+    optimized OpenMeshTools
+    debug OpenMeshCored 
+    debug OpenMeshToolsd
+    opengl32
+    glu32
+)
