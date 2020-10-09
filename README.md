@@ -1,4 +1,4 @@
-# Mesh Viewer for Triangular Surfaces
+# Framework for surface mesh processing
 
 The program is used to load meshes and render using OpenGL.
 
