@@ -3,6 +3,23 @@ project(SurfaceFramework)
 
 add_definitions(/D_USE_MATH_DEFINES)
 
+#Complier
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    message(STATUS "编译器是gcc")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    message(STATUS "编译器是msvc")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+    message(STATUS "编译器是AppleClang")
+    set(Qt5Core_DIR /Users/chenhonghu/Downloads/meigyoku/qt/5.14.2/clang_64/lib/cmake/Qt5Core)#设置QT的目录
+    set(Qt5Gui_DIR /Users/chenhonghu/Downloads/meigyoku/qt/5.14.2/clang_64/lib/cmake/Qt5Gui)
+    set(Qt5OpenGL_DIR /Users/chenhonghu/Downloads/meigyoku/qt/5.14.2/clang_64/lib/cmake/Qt5OpenGL)
+    set(Qt5Widgets_DIR /Users/chenhonghu/Downloads/meigyoku/qt/5.14.2/clang_64/lib/cmake/Qt5Widgets)
+    find_package(OpenGL REQUIRED)
+    include_directories(${OPENGL_INCLUDE_DIR})
+    find_package(GLUT REQUIRED)
+    include_directories(${GLUT_INCLUDE_DIR})
+endif()
+
 #path
 SET(EIGEN_PATH "D:/LIBRARY/Eigen")
 SET(OPENMESH_PATH "D:/LIBRARY/OpenMesh/src")
@@ -13,13 +30,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt5Widgets)  
-find_package(Qt5Core)
-find_package(Qt5Gui)
-find_package(Qt5OpenGL)
-get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)# https://zhuanlan.zhihu.com/p/73469206, auto-depoly
-get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-find_program(DEPLOYQT_EXECUTABLE NAMES windeployqt macdeployqt HINTS "${_qt_bin_dir}")
+find_package(Qt5Widgets REQUIRED)  
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+find_package(Qt5OpenGL REQUIRED)
 
 set(QRC_SOURCE_FILES src/surfacemeshprocessing.qrc)
 qt5_add_resources(QRC_FILES ${QRC_SOURCE_FILES})
@@ -37,19 +51,21 @@ file (GLOB SRCFILES
 )
 
 add_executable(${PROJECT_NAME} ${SRCFILES} ${QRC_FILES})
-if(WIN32)
-add_custom_command(TARGET ${PROJECT_NAME}
-POST_BUILD
-COMMAND ${DEPLOYQT_EXECUTABLE} "$<TARGET_FILE:${PROJECT_NAME}>"
-    --$<LOWER_CASE:$<CONFIG>> --qmldir ${CMAKE_SOURCE_DIR}
-)
-endif()
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL
     optimized OpenMeshCore 
     optimized OpenMeshTools
     debug OpenMeshCored 
     debug OpenMeshToolsd
-    opengl32
-    glu32
 )
+if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+target_link_libraries(${PROJECT_NAME} 
+    opengl32
+    glu32   
+)
+elseif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    target_link_libraries(${PROJECT_NAME} 
+    ${GLUT_LIBRARY} 
+    ${OPENGL_LIBRARY}
+)
+endif()

@@ -3,9 +3,12 @@
 
 #include <QGLWidget>
 
+#ifdef _WIN64
 #include <Windows.h>
-#include <GL/GL.h>
+#include <GL/gl.h>
 #include <GL/glu.h>
-
+#elif __APPLE__
+#include <GLUT/glut.h>
+#endif
 #endif
 

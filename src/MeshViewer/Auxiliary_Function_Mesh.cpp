@@ -1,5 +1,5 @@
 #include "InteractiveViewerWidget.h"
-#include <Eigen\Dense>
+#include <Eigen/Dense>
 
 void InteractiveViewerWidget::inverse_mesh_connectivity()
 {
