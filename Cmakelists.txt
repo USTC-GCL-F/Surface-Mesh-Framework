@@ -50,17 +50,14 @@ include_directories(${OPENMESH_PATH})
 link_directories(${OPENMESH_LIB_PATH})
 
 file (GLOB ANN_FILE
-    src/ANN/*.h
-    src/ANN/*.cpp
+    src/ANN/*
 )
 
 file (GLOB GUI_FILE
     src/MeshViewer/Aux_Transform_Mesh_Dialog.h
     src/main.cpp
-    src/MeshViewer/MainViewerWidget.cpp
-    src/MeshViewer/MainViewerWidget.h
-    src/MeshViewer/MeshParamDialog.cpp
-    src/MeshViewer/MeshParamDialog.h
+    src/MeshViewer/MainViewerWidget.*
+    src/MeshViewer/MeshParamDialog.*
     src/surfacemeshprocessing.cpp
     src/surfacemeshprocessing.h
 )
