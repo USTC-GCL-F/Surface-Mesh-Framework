@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.7)
 project(SurfaceFramework)
 
+#设置不生成MinSizeRel;RelWithDebInfo
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
+
 add_definitions(/D_USE_MATH_DEFINES)
 
 #Complier
@@ -34,6 +37,10 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
+get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)# https://zhuanlan.zhihu.com/p/73469206，调用windepolyqt进行自动部署
+get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+find_program(DEPLOYQT_EXECUTABLE NAMES windeployqt macdeployqt HINTS "${_qt_bin_dir}")
+
 
 set(QRC_SOURCE_FILES src/surfacemeshprocessing.qrc)
 qt5_add_resources(QRC_FILES ${QRC_SOURCE_FILES})
@@ -42,15 +49,49 @@ include_directories(${EIGEN_PATH})
 include_directories(${OPENMESH_PATH})
 link_directories(${OPENMESH_LIB_PATH})
 
-file (GLOB SRCFILES
-    src/*.cpp
-    src/MeshViewer/*.cpp
-    src/MeshViewer/Aux_Transform_Mesh_Dialog.h
-    src/Common/*.cpp
+file (GLOB ANN_FILE
+    src/ANN/*.h
     src/ANN/*.cpp
 )
 
-add_executable(${PROJECT_NAME} ${SRCFILES} ${QRC_FILES})
+file (GLOB GUI_FILE
+    src/MeshViewer/Aux_Transform_Mesh_Dialog.h
+    src/main.cpp
+    src/MeshViewer/MainViewerWidget.cpp
+    src/MeshViewer/MainViewerWidget.h
+    src/MeshViewer/MeshParamDialog.cpp
+    src/MeshViewer/MeshParamDialog.h
+    src/surfacemeshprocessing.cpp
+    src/surfacemeshprocessing.h
+)
+
+file (GLOB MeshViewer_FILE
+    src/MeshViewer/Auxiliary_Function_Mesh.cpp
+    src/MeshViewer/InteractiveViewerWidget.*
+    src/MeshViewer/MeshDefinition.*
+    src/MeshViewer/MeshViewerWidget.*
+    src/MeshViewer/OpenglHeaders.h
+    src/MeshViewer/QGLViewerWidget.*
+)
+
+add_executable(${PROJECT_NAME} ${SRCFILES} 
+    ${ANN_FILE}
+    ${GUI_FILE}
+    ${MeshViewer_FILE}
+    ${QRC_FILES}
+)
+
+if(WIN32)
+add_custom_command(TARGET ${PROJECT_NAME}
+POST_BUILD
+COMMAND ${DEPLOYQT_EXECUTABLE} "$<TARGET_FILE:${PROJECT_NAME}>"
+    --$<LOWER_CASE:$<CONFIG>> --qmldir ${CMAKE_SOURCE_DIR}
+)
+endif()
+
+source_group(ANN FILES ${ANN_FILE})
+source_group(GUI FILES ${GUI_FILE})
+source_group(MeshViewer FILES ${MeshViewer_FILE})
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL
     optimized OpenMeshCore 
